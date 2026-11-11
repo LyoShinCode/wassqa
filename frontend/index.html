@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>wasqa</title>
+    <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f0f2f5; }
+        .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .auth-box { background: white; padding: 30px; border-radius: 8px; width: 360px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .auth-box h2 { color: #12A852; text-align: center; margin: 10px 0; }
+        .auth-box input { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .auth-box button { width: 100%; padding: 10px; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-top: 6px; }
+        .btn-login { background: #12A852; }
+        .btn-register { background: #43E97B; }
+        .btn-back { background: #888; }
+        .section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+        .error { color: #d92d20; font-size: 13px; margin-top: 8px; min-height: 18px; }
+        .uin-display { font-size: 32px; font-weight: bold; color: #12A852; text-align: center; margin: 15px 0; letter-spacing: 2px; }
+        .chat-layout { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+        .sidebar { background: #fff; border-right: 1px solid #ddd; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; }
+        .sidebar-header img { width: 32px; height: 32px; }
+        .sidebar-header h3 { margin: 0; color: #12A852; }
+        .sidebar-header span { font-size: 12px; color: #888; margin-left: auto; }
+        .add-contact { padding: 10px; border-bottom: 1px solid #eee; display: flex; gap: 6px; }
+        .add-contact input { flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+        .add-contact button { padding: 6px 12px; background: #12A852; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #contacts-list { flex: 1; overflow-y: auto; }
+        .contact { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 8px; }
+        .contact:hover { background: #f8f9fa; }
+        .contact .uin { font-size: 12px; color: #888; }
+        .contact button { opacity: 0; transition: opacity 0.2s; }
+        .contact:hover button { opacity: 1; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .status-online { background: #4caf50; }
+        .status-offline { background: #ccc; }
+        .status-away { background: #ff9800; }
+        .status-dnd { background: #f44336; }
+        .main { display: flex; flex-direction: column; background: #e5ddd5; }
+        .chat-header { padding: 15px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 10px; }
+        .messages { flex: 1; overflow-y: auto; padding: 15px; }
+        .message { margin: 6px 0; padding: 8px 12px; border-radius: 12px; max-width: 60%; word-wrap: break-word; position: relative; }
+        .message.mine { background: #dcf8c6; margin-left: auto; }
+        .message.theirs { background: white; }
+        .typing-indicator { color: #666; font-size: 12px; font-style: italic; padding: 0 15px 5px; min-height: 18px; }
+        .input-bar { display: flex; padding: 10px; background: white; border-top: 1px solid #ddd; gap: 8px; }
+        .input-bar input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .input-bar button { padding: 10px 20px; background: #12A852; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .status-bar { padding: 10px; border-top: 1px solid #eee; }
+        .status-bar select { width: 100%; padding: 6px; }
+        .logout-btn { padding: 8px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 10px; }
+        .uh-oh { animation: flash 0.5s 3; }
+        @keyframes flash { 50% { background: #ffe082; } }
+        .msg-actions { margin-top: 4px; font-size: 11px; }
+        .msg-actions a { margin-right: 8px; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<!-- ЭКРАН АВТОРИЗАЦИИ -->
+<div id="auth-screen" class="auth-screen">
+    <div class="auth-box">
+        <div style="text-align:center;">
+            <img src="/static/logo.svg" alt="wasqa" style="width:96px; height:96px;">
+        </div>
+        <h2>wasqa</h2>
+
+        <div id="view-login">
+            <h3 style="margin:10px 0; font-size:14px; color:#666;">Вход</h3>
+            <input id="login-uin" placeholder="Ваш UIN (9 цифр)">
+            <input id="login-pass" type="password" placeholder="Пароль">
+            <button class="btn-login" onclick="doLogin()">Войти</button>
+            <div class="error" id="login-error"></div>
+        </div>
+
+        <div id="view-register" class="section" style="display:none;">
+            <h3 style="margin:10px 0; font-size:14px; color:#666;">Регистрация</h3>
+            <input id="reg-nick" placeholder="Придумайте никнейм">
+            <input id="reg-pass" type="password" placeholder="Пароль (мин. 6 символов)">
+            <input id="reg-pass2" type="password" placeholder="Повторите пароль">
+            <button class="btn-register" onclick="doRegister()">Зарегистрироваться</button>
+            <button class="btn-back" onclick="showView('login')">Назад</button>
+            <div class="error" id="reg-error"></div>
+        </div>
+
+        <div id="view-success" style="display:none;">
+            <h3 style="text-align:center; color:#12A852; margin:15px 0;">🎉 Регистрация успешна!</h3>
+            <p style="text-align:center; color:#666;">Ваш UIN:</p>
+            <div class="uin-display" id="generated-uin"></div>
+            <p style="text-align:center; font-size:12px; color:#d92d20;">⚠️ Запомните этот номер!</p>
+            <button class="btn-login" onclick="loginWithGeneratedUIN()">Войти сейчас</button>
+            <button class="btn-back" onclick="showView('login')">Войти с другим UIN</button>
+        </div>
+
+        <div id="view-switch" style="text-align:center; margin-top:15px;">
+            <p style="font-size:13px; color:#666;">Нет аккаунта?
+                <a href="#" onclick="showView('register'); return false;" style="color:#12A852;">Зарегистрироваться</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ЭКРАН ЧАТА -->
+<div id="chat-screen" class="chat-layout" style="display:none;">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="/static/logo.svg" alt="wasqa">
+            <h3>wasqa</h3>
+            <span id="my-uin"></span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Выйти</button>
+        <div class="add-contact">
+            <input id="add-uin" placeholder="UIN контакта">
+            <button onclick="addContact()">+</button>
+        </div>
+        <div id="contacts-list"></div>
+        <div class="status-bar">
+            <select id="status-select" onchange="changeStatus()">
+                <option value="online">🟢 Online</option>
+                <option value="away">🟡 Away</option>
+                <option value="dnd">🔴 Do not disturb</option>
+            </select>
+        </div>
+    </div>
+    <div class="main">
+        <div class="chat-header" id="chat-header">Выберите контакт</div>
+        <div class="messages" id="messages"></div>
+        <div class="typing-indicator" id="typing-indicator"></div>
+        <div class="input-bar">
+            <input id="msg-input" placeholder="Сообщение..." onkeypress="onTyping(event)">
+            <button onclick="sendMessage()">Отправить</button>
+        </div>
+    </div>
+</div>
+
+<audio id="uh-oh-sound" preload="auto">
+    <source src="/static/uh-oh.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    const API = 'http://localhost:8000/api';
+    let token = localStorage.getItem('token');
+    let myUserId = parseInt(localStorage.getItem('user_id'));
+    let ws = null;
+    let currentChatId = null;
+    let currentContactUserId = null;
+    let generatedUIN = null;
+
+    if (token && myUserId) initApp();
+
+    function showView(view) {
+        document.getElementById('view-login').style.display = view === 'login' ? 'block' : 'none';
+        document.getElementById('view-register').style.display = view === 'register' ? 'block' : 'none';
+        document.getElementById('view-success').style.display = view === 'success' ? 'block' : 'none';
+        document.getElementById('view-switch').style.display = view === 'login' ? 'block' : 'none';
+        document.getElementById('login-error').textContent = '';
+        document.getElementById('reg-error').textContent = '';
+    }
+
+    async function doRegister() {
+        const nick = document.getElementById('reg-nick').value.trim();
+        const pass = document.getElementById('reg-pass').value;
+        const pass2 = document.getElementById('reg-pass2').value;
+        const errorEl = document.getElementById('reg-error');
+        errorEl.textContent = '';
+
+        if (!nick) { errorEl.textContent = 'Введите никнейм'; return; }
+        if (pass.length < 6) { errorEl.textContent = 'Пароль минимум 6 символов'; return; }
+        if (pass !== pass2) { errorEl.textContent = 'Пароли не совпадают'; return; }
+
+        try {
+            const r = await fetch(`${API}/register`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({nickname: nick, password: pass})
+            });
+            const data = await r.json();
+            if (!r.ok) throw new Error(data.detail || 'Ошибка регистрации');
+
+            generatedUIN = data.uin;
+            document.getElementById('generated-uin').textContent = data.uin;
+            showView('success');
+        } catch(e) {
+            errorEl.textContent = e.message;
+        }
+    }
+
+    function loginWithGeneratedUIN() {
+        document.getElementById('login-uin').value = generatedUIN;
+        document.getElementById('login-pass').value = document.getElementById('reg-pass').value;
+        showView('login');
+        doLogin();
+    }
+
+    async function doLogin() {
+        const uin = document.getElementById('login-uin').value.trim();
+        const pass = document.getElementById('login-pass').value;
+        const errorEl = document.getElementById('login-error');
+        errorEl.textContent = '';
+
+        if (!uin || !pass) { errorEl.textContent = 'Заполните все поля'; return; }
+
+        try {
+            const r = await fetch(`${API}/login`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({uin, password: pass})
+            });
+            const data = await r.json();
+            if (!r.ok) throw new Error(data.detail || 'Неверный UIN или пароль');
+
+            token = data.token;
+            myUserId = data.user_id;
+            localStorage.setItem('token', token);
+            localStorage.setItem('user_id', myUserId);
+            localStorage.setItem('uin', uin);
+            initApp();
+        } catch(e) {
+            errorEl.textContent = e.message;
+        }
+    }
+
+    function initApp() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('chat-screen').style.display = 'grid';
+        document.getElementById('my-uin').textContent = localStorage.getItem('uin');
+        loadContacts();
+        connectWS();
+    }
+
+    async function loadContacts() {
+        try {
+            const r = await fetch(`${API}/contacts?token=${token}`);
+            const contacts = await r.json();
+            const list = document.getElementById('contacts-list');
+            list.innerHTML = contacts.map(c => `
+                <div class="contact" data-uid="${c.id}">
+                    <div onclick="openChat(${c.id})" style="flex:1; cursor:pointer;">
+                        <span class="status-dot status-${c.online_status}"></span>
+                        ${c.nickname}
+                        <div class="uin">UIN: ${c.uin}</div>
+                    </div>
+                    ${c.unread > 0 ? `<span style="background:#12A852; color:white; border-radius:10px; padding:2px 8px; font-size:11px; margin-right:8px;">${c.unread}</span>` : ''}
+                    <button onclick="removeContact(${c.id})" title="Удалить контакт"
+                            style="background:none; border:none; color:#ff4444; cursor:pointer; font-size:16px; padding:4px 8px;">✕</button>
+                </div>
+            `).join('');
+        } catch(e) { console.error(e); }
+    }
+
+    async function removeContact(contactId) {
+        if (!confirm('Удалить контакт?')) return;
+        try {
+            const r = await fetch(`${API}/contacts/${contactId}?token=${token}`, {method:'DELETE'});
+            if (!r.ok) throw new Error('Ошибка');
+            if (currentContactUserId === contactId) {
+                currentChatId = null;
+                currentContactUserId = null;
+                document.getElementById('chat-header').textContent = 'Выберите контакт';
+                document.getElementById('messages').innerHTML = '';
+            }
+            await loadContacts();
+        } catch(e) { alert(e.message); }
+    }
+
+    async function addContact() {
+        const uin = document.getElementById('add-uin').value.trim();
+        if (!uin) return;
+        try {
+            const r = await fetch(`${API}/contacts/add?uin=${uin}&token=${token}`, {method:'POST'});
+            if (!r.ok) throw new Error('Ошибка');
+            document.getElementById('add-uin').value = '';
+            await loadContacts();
+        } catch(e) { alert(e.message); }
+    }
+
+    async function getChatId(contactUserId) {
+        const r = await fetch(`${API}/chats/direct/${contactUserId}?token=${token}`);
+        const data = await r.json();
+        return data.chat_id;
+    }
+
+    function formatTime(isoString) {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        return date.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
+    }
+
+    async function openChat(contactUserId) {
+        currentContactUserId = contactUserId;
+        const contacts = await (await fetch(`${API}/contacts?token=${token}`)).json();
+        const contact = contacts.find(c => c.id === contactUserId);
+        if (!contact) return;
+
+        currentChatId = await getChatId(contactUserId);
+        document.getElementById('chat-header').innerHTML = `
+            <img src="/static/logo.svg" style="width:24px; height:24px;">
+            <strong>${contact.nickname}</strong>
+            <span style="font-size:12px; color:#888;">UIN: ${contact.uin}</span>
+        `;
+        document.getElementById('messages').innerHTML = '';
+
+        const r = await fetch(`${API}/messages/${currentChatId}?token=${token}`);
+        const msgs = await r.json();
+        msgs.forEach(m => appendMessage({
+            msg_id: m.id,
+            text: m.text,
+            created_at: m.created_at,
+            is_deleted: m.is_deleted
+        }, m.author_id === myUserId));
+
+        await loadContacts();
+    }
+
+    function appendMessage(payload, mine) {
+        const el = document.createElement('div');
+        el.className = 'message ' + (mine ? 'mine' : 'theirs');
+        el.dataset.msgId = payload.msg_id;
+
+        if (payload.is_deleted) {
+            el.innerHTML = `<div style="font-style:italic; color:#888;">🗑️ Сообщение удалено</div>`;
+        } else {
+            const timeStr = formatTime(payload.created_at);
+            const editedMark = payload.is_edited ? ' <span style="font-size:9px; color:#aaa;">(ред.)</span>' : '';
+            const actions = mine ? `
+                <div class="msg-actions">
+                    <a href="#" onclick="editMsg(${payload.msg_id}); return false;" style="color:#12A852;">✏️</a>
+                    <a href="#" onclick="deleteMsg(${payload.msg_id}); return false;" style="color:#ff4444;">🗑️</a>
+                </div>
+            ` : '';
+            el.innerHTML = `
+                <div>${escapeHtml(payload.text)}${editedMark}</div>
+                <div style="font-size:10px; color:#888; text-align:right; margin-top:4px;">${timeStr}</div>
+                ${actions}
+            `;
+        }
+
+        document.getElementById('messages').appendChild(el);
+        el.scrollIntoView();
+    }
+
+    async function deleteMsg(msgId) {
+        if (!confirm('Удалить сообщение?')) return;
+        try {
+            const r = await fetch(`${API}/messages/${msgId}?token=${token}`, {method:'DELETE'});
+            if (!r.ok) throw new Error('Ошибка');
+        } catch(e) { alert(e.message); }
+    }
+
+    async function editMsg(msgId) {
+        const el = document.querySelector(`[data-msg-id="${msgId}"] div:first-child`);
+        if (!el) return;
+        const currentText = el.textContent.replace(' (ред.)', '');
+        const newText = prompt('Редактировать сообщение:', currentText);
+        if (!newText || newText === currentText) return;
+        try {
+            const r = await fetch(`${API}/messages/${msgId}?text=${encodeURIComponent(newText)}&token=${token}`, {method:'PATCH'});
+            if (!r.ok) throw new Error('Ошибка');
+        } catch(e) { alert(e.message); }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function connectWS() {
+        if (ws) ws.close();
+        ws = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
+        ws.onmessage = (ev) => handleWSMessage(JSON.parse(ev.data));
+        ws.onclose = () => setTimeout(connectWS, 2000);
+    }
+
+    function handleWSMessage(msg) {
+        if (msg.type === 'message:new') {
+            if (msg.payload.chat_id === currentChatId) {
+                appendMessage({...msg.payload, created_at: new Date().toISOString()}, false);
+                playUhOh();
+            }
+            loadContacts();
+        } else if (msg.type === 'message:deleted') {
+            const el = document.querySelector(`[data-msg-id="${msg.payload.msg_id}"]`);
+            if (el) el.innerHTML = `<div style="font-style:italic; color:#888;">🗑️ Сообщение удалено</div>`;
+        } else if (msg.type === 'message:edited') {
+            const el = document.querySelector(`[data-msg-id="${msg.payload.msg_id}"] div:first-child`);
+            if (el) el.innerHTML = `${escapeHtml(msg.payload.text)} <span style="font-size:9px; color:#aaa;">(ред.)</span>`;
+        } else if (msg.type === 'presence:update') {
+            const el = document.querySelector(`.contact[data-uid="${msg.payload.user_id}"] .status-dot`);
+            if (el) el.className = `status-dot status-${msg.payload.status}`;
+        } else if (msg.type === 'typing' && msg.payload.chat_id === currentChatId) {
+            document.getElementById('typing-indicator').textContent = 'печатает...';
+            setTimeout(() => { document.getElementById('typing-indicator').textContent = ''; }, 3000);
+        }
+    }
+
+    function onTyping(e) {
+        if (currentChatId) {
+            ws.send(JSON.stringify({type: 'typing', payload: {chat_id: currentChatId}}));
+        }
+        if (e.key === 'Enter') sendMessage();
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('msg-input');
+        const text = input.value.trim();
+        if (!text || !currentChatId) return;
+
+        const localTime = new Date().toISOString();
+        ws.send(JSON.stringify({type: 'message', payload: {chat_id: currentChatId, text: text}}));
+        appendMessage({text, created_at: localTime}, true);
+        input.value = '';
+    }
+
+    function changeStatus() {
+        const status = document.getElementById('status-select').value;
+        ws.send(JSON.stringify({type: 'status', payload: {status: status}}));
+    }
+
+    function playUhOh() {
+        const audio = document.getElementById('uh-oh-sound');
+        if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Audio:', e.message));
+        }
+    }
+
+    function logout() {
+        if (!confirm('Выйти из аккаунта?')) return;
+        localStorage.clear();
+        if (ws) ws.close();
+        location.reload();
+    }
+</script>
+</body>
+</html>

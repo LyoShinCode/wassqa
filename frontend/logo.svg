@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="title desc">
+  <title id="title">Лохматый зелёный кот с красной прядью</title>
+  <desc id="desc">Оригинальная векторная иконка: морда зелёного кота с несколькими лохматыми прядями шерсти на голове и одной акцентной красной прядью.</desc>
+
+  <defs>
+    <!-- Основной зелёный цвет с лёгким градиентом для глубины -->
+    <linearGradient id="catGreenMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ADE80"/> <!-- Светлее сверху слева -->
+      <stop offset="100%" stop-color="#16A34A"/> <!-- Темнее снизу справа -->
+    </linearGradient>
+
+    <!-- Цвет для теней под шерстью (чтобы создать эффект слоистости) -->
+    <linearGradient id="furShadow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F7A3A" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0F7A3A" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <!-- Акцентная красная прядь -->
+    <linearGradient id="hairRedAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+    
+    <!-- Белые блики для глаз -->
+    <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Подложка (опционально, можно удалить если нужен прозрачный фон) -->
+  <rect width="512" height="512" rx="112" fill="#0F172A"/>
+
+  <!-- УШИ (задний план) -->
+  <path d="M132 170 L106 58 L216 116 Z" fill="url(#catGreenMain)"/>
+  <path d="M380 170 L406 58 L296 116 Z" fill="url(#catGreenMain)"/>
+  
+  <!-- Тени внутри ушей -->
+  <path d="M148 152 L130 86 L198 124 Z" fill="url(#furShadow)"/>
+  <path d="M364 152 L382 86 L314 124 Z" fill="url(#furShadow)"/>
+
+  <!-- ГОЛОВА (основной овал) -->
+  <ellipse cx="256" cy="260" rx="150" ry="140" fill="url(#catGreenMain)"/>
+
+  <!-- ЛОХМАТЫЕ ПРЯДИ (Зелёные) -->
+  <!-- Эти пути имитируют отдельные клочки шерсти, торчащие вверх -->
+  
+  <!-- Левая группа прядей -->
+  <path d="M180 130 Q170 90 190 100 Q200 110 195 135 Z" fill="url(#catGreenMain)" stroke="#16A34A" stroke-width="2"/>
+  <path d="M210 120 Q200 80 220 95 Q230 110 225 130 Z" fill="url(#catGreenMain)" stroke="#16A34A" stroke-width="2"/>
+  <path d="M160 140 Q150 100 170 115 Q180 125 175 145 Z" fill="url(#catGreenMain)" stroke="#16A34A" stroke-width="2"/>
+
+  <!-- Правая группа прядей -->
+  <path d="M332 130 Q342 90 322 100 Q312 110 317 135 Z" fill="url(#catGreenMain)" stroke="#16A34A" stroke-width="2"/>
+  <path d="M302 120 Q312 80 292 95 Q282 110 287 130 Z" fill="url(#catGreenMain)" stroke="#16A34A" stroke-width="2"/>
+  <path d="M352 140 Q362 100 342 115 Q332 125 337 145 Z" fill="url(#catGreenMain)" stroke="#16A34A" stroke-width="2"/>
+
+  <!-- Центральные короткие пряди вокруг основной красной -->
+  <path d="M240 115 Q235 95 245 105 Q250 115 248 125 Z" fill="url(#catGreenMain)"/>
+  <path d="M272 115 Q277 95 267 105 Q262 115 264 125 Z" fill="url(#catGreenMain)"/>
+
+
+  <!-- АКЦЕНТНАЯ КРАСНАЯ ПРЯДЬ -->
+  <!-- Длинная, изогнутая, находится в центре, поверх зелёных -->
+  <path d="M256 100 
+           C256 100 240 60 230 50 
+           C225 45 235 40 240 45 
+           C250 55 260 70 260 90 
+           C260 95 258 98 256 100 Z" 
+        fill="url(#hairRedAccent)" 
+        stroke="#991B1B" 
+        stroke-width="1.5"/>
+        
+  <!-- Маленькая вторая красная "искра" рядом, для баланса композиции, но основная одна большая -->
+  <path d="M256 100 
+           C256 100 270 65 280 55 
+           C285 50 275 45 270 50 
+           C260 60 252 75 252 90 
+           C252 95 254 98 256 100 Z" 
+        fill="url(#hairRedAccent)" 
+        opacity="0.8"/>
+
+
+  <!-- ГЛАЗА -->
+  <!-- Белки -->
+  <ellipse cx="190" cy="250" rx="42" ry="52" fill="#FFFFFF"/>
+  <ellipse cx="322" cy="250" rx="42" ry="52" fill="#FFFFFF"/>
+  
+  <!-- Зрачки (вертикальные щели, как у кошки) -->
+  <ellipse cx="194" cy="255" rx="14" ry="32" fill="#102018"/>
+  <ellipse cx="318" cy="255" rx="14" ry="32" fill="#102018"/>
+  
+  <!-- Блики в глазах (для живости) -->
+  <circle cx="188" cy="240" r="8" fill="#FFFFFF"/>
+  <circle cx="312" cy="240" r="8" fill="#FFFFFF"/>
+  <circle cx="198" cy="265" r="4" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="322" cy="265" r="4" fill="#FFFFFF" opacity="0.6"/>
+
+  <!-- НОС -->
+  <path d="M242 315 Q256 305 270 315 Q266 335 256 340 Q246 335 242 315 Z" fill="#102018"/>
+  
+  <!-- РОТ -->
+  <path
+    d="M256 340 L256 355 M256 355 C242 370 224 365 220 350 M256 355 C270 370 288 365 292 350"
+    fill="none"
+    stroke="#102018"
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- УСЫ (более тонкие и изящные, чтобы не перегружать лого) -->
+  <g stroke="#E9FFF3" stroke-width="6" stroke-linecap="round" opacity="0.9">
+    <path d="M130 300 L180 310"/>
+    <path d="M125 325 L178 328"/>
+    <path d="M132 350 L182 345"/>
+
+    <path d="M382 300 L332 310"/>
+    <path d="M387 325 L334 328"/>
+    <path d="M380 350 L330 345"/>
+  </g>
+  
+  <!-- ЩЁКИ (лёгкий румянец/текстура шерсти по бокам) -->
+  <path d="M110 260 Q100 280 115 300 Q130 280 120 260 Z" fill="url(#furShadow)" opacity="0.3"/>
+  <path d="M402 260 Q412 280 397 300 Q382 280 392 260 Z" fill="url(#furShadow)" opacity="0.3"/>
+
+</svg>
