@@ -225,8 +225,8 @@ MIT © 2026
 
 <div>
   <b>Сделано с любовью как портфолио системного аналитика</b>
-</div>
+</div>  
 
-📞 Контакты
-telegram: @therandomname
+📞 Контакты<br>
+telegram: @therandomname<br>
 email: iamthealeksei@gmail.com
