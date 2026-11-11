@@ -1,7 +1,7 @@
-# 🐱 wasqa — веб-мессенджер в стиле ICQ
+# 🐱 wassqa — веб-мессенджер в стиле ICQ
 
 <div align="center">
-  <img src="frontend/logo.svg" alt="wasqa logo" width="128" height="128">
+  <img src="frontend/logo.svg" alt="wassqa logo" width="128" height="128">
   <h3>Современный мессенджер с духом классического ICQ</h3>
   <p>
     <img src="https://img.shields.io/badge/Python-3.15-blue?logo=python" alt="Python">
@@ -16,9 +16,9 @@
 
 ## 📖 О проекте
 
-**wasqa** — легковесный веб-мессенджер, вдохновлённый классическим ICQ. Проект разработан как пет-проект для демонстрации навыков системного анализа и проектирования ПО.
+**wassqa** — легковесный веб-мессенджер, вдохновлённый классическим ICQ. Проект разработан как пет-проект для демонстрации навыков системного анализа и проектирования ПО.
 
-> 💡 Название *wasqa* — аллюзия на «WhatsApp» + «Q&A» (вопрос-ответ), отсылка к классической коммуникации.
+> 💡 Название *wassqa* — аллюзия на «WhatsApp» + «Q&A» (вопрос-ответ), отсылка к классической коммуникации.
 
 ### ✨ Ключевые возможности
 
@@ -44,8 +44,8 @@
 ### Установка и запуск
 
     # 1. Клонируем репозиторий
-    git clone https://github.com/YOUR_USERNAME/wasqa.git
-    cd wasqa
+    git clone https://github.com/lyoshincode/wassqa.git
+    cd wassqa
 
     # 2. Создаём виртуальное окружение
     python -m venv venv
@@ -133,7 +133,7 @@ erDiagram
 
 ## 📂 Структура проекта
 
-    wasqa/
+    wassqa/
     ├── backend/
     │   ├── main.py              # FastAPI-приложение + WebSocket-хаб
     │   ├── db.py                # Схема SQLite и коннектор
